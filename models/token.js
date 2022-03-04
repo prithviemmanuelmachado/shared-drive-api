@@ -5,9 +5,10 @@ const settings = require('../settings.json');
 const key = secrets[0].jwtKey;
 const jwtExpiresIn = settings[0].jwtExpiresIn;
 
-module.exports = function(userID){
+module.exports = function(userID, isAdmin){
     return jwt.sign({
-        userID: userID
+        userID: userID,
+        isAdmin: isAdmin
     }, key, {
         expiresIn: jwtExpiresIn
     });
