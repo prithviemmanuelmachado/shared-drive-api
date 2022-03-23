@@ -72,16 +72,37 @@ router.post('/newAdditionalInformation', (req, res) => {
 
 router.delete('/removeInformation', (req, res) => {
     const id = req.query.id;
-    AdditionalInformation.findByIdAndDelete(id, (err, doc) => {
-        if (err){
-            res.status(500);
-            res.json(dbError);
-        }
-        else{
-            res.status(200);
-            res.json({'success': 'Entry successfully deleted'});
-        }
-    });
+    if(!token){
+        res.status(400);
+        res.json(authError);
+    }
+    else{
+        jwt.verify(token, jwt_secret, (err, decodedToken)=>{
+            if(err){
+                res.status(500);
+                res.json(dbError);
+            }
+            else{
+                if(decodedToken.isAdmin === false){
+                    res.status(400);
+                    res.json(adminError);
+                }
+                else{
+                    AdditionalInformation.findByIdAndDelete(id, (err, doc) => {
+                        if (err){
+                            res.status(500);
+                            res.json(dbError);
+                        }
+                        else{
+                            res.status(200);
+                            res.json({'success': 'Entry successfully deleted'});
+                        }
+                    });
+                }
+            }
+        });
+    }
+    
 });
 
 module.exports = router;
