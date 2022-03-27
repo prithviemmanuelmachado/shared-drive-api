@@ -1,3 +1,7 @@
+//get list of additional information categories
+//add new additional information categories
+//remove a additional information category
+
 const express = require('express');
 const cookie_parser = require('cookie-parser');
 const jwt = require('jsonwebtoken');

@@ -171,8 +171,14 @@ router.get('/isAdminLoggedIn', (req, res) => {
     }
     else{
         jwt.verify(token, jwt_secret, (err, decodedToken)=>{
-            res.status(200);
-            res.json(decodedToken.isAdmin);
+            if(err){
+                res.status(400);
+                res.json({"error" : "error"});
+            }
+            else{
+                res.status(200);
+                res.json(decodedToken.isAdmin);
+            }
         });
     }
 });
