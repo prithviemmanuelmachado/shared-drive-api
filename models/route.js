@@ -17,8 +17,7 @@ const routeSchema = new mongoose.Schema({
           enum: ['Point'], 
         },
         coordinates: {
-          type: [Number],
-          index: '2dshpere'
+          type: [Number]
         },
         address: String
     },
@@ -28,12 +27,12 @@ const routeSchema = new mongoose.Schema({
           enum: ['Point'],
         },
         coordinates: {
-          type: [Number],
-          index: '2dshpere'
+          type: [Number]
         },
         address: String
     } 
 });
+
 
 const Route = mongoose.model('route', routeSchema);
 
