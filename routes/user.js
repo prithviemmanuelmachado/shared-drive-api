@@ -183,4 +183,24 @@ router.get('/isAdminLoggedIn', (req, res) => {
     }
 });
 
+router.get('/getUsername', (req, res) => {
+    const id = req.query.id;
+    Users.findOne({_id: id}, (err, doc) => {
+        if(err){
+            res.status(500);
+            res.json(dbError);
+        }
+        else{
+            if(!doc){
+                res.status(404);
+                res.json(dbError);
+            }
+            else{
+                res.status(200);
+                res.json({'username': doc.username});
+            }
+        }
+    });
+});
+
 module.exports = router;

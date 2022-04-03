@@ -6,7 +6,7 @@ const cookie_parser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const secrets = require('../secrets.json');
 const Route = require('../models/route');
-const User = require('../models/user')
+const User = require('../models/user');
 
 const router = express.Router();
 const dbError = {'error': 'Error connecting to database. Please contact admin.'};
