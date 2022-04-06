@@ -8,13 +8,12 @@ const secrets = require('../secrets.json');
 const settings = require('../settings.json');
 const Request = require('../models/request');
 const User = require('../models/user');
-const notification = require('../models/createNotification');
+const notification = require('../models/notificationService');
 
 const router = express.Router();
 const dbError = {'error': 'Error connecting to database. Please contact admin.'};
 const authError = {'error' : 'Please login to perform action'};
 const jwt_secret = secrets[0].jwtKey;
-const selfURI = settings[0].serverURI;
 
 router.use(cookie_parser());
 
@@ -74,6 +73,93 @@ router.post('/createRequest', (req, res) => {
                 .catch((err) => {
                     res.status(500);
                     res.json(dbError);
+                });
+            }
+        });
+    }
+});
+
+router.get('/getPickupLocation', (req, res) => {
+    const id = req.query.id;
+    const token = req.headers.jwt;
+    if(token == 'undefined'){
+        res.status(400);
+        res.json(authError);
+    }
+    else{
+        jwt.verify(token, jwt_secret, (err, decodedToken)=>{
+            if(err){
+                res.status(400);
+                res.json(dbError);
+            }
+            else{
+                Request.findOne({_id: id}, (err, doc) => {
+                    if(err){
+                        res.status(500);
+                        res.json(dbError);
+                    }
+                    else{
+                        if(!doc){
+                            res.status(400);
+                            res.json(dbError);
+                        }
+                        else{
+                            res.status(200);
+                            res.json({loc: doc.pickupLocation});
+                        }
+                    }
+                });
+            }
+        });
+    }
+    
+});
+
+router.put('/setRequestStatus', (req, res) => {
+    const status = req.query.status;
+    const id = req.query.id;
+    const notifId = req.query.notifId;
+    const token = req.headers.jwt;
+    const createdFor = req.query.createdFor;
+
+    if(token == 'undefined'){
+        res.status(400);
+        res.json(authError);
+    }
+    else{
+        jwt.verify(token, jwt_secret, (err, decodedToken)=>{
+            if(err){
+                res.status(400);
+                res.json(dbError);
+            }
+            else{
+                Request.findOneAndUpdate({_id: id}, { $set : {
+                    status: status
+                }}, (err, doc, re) => {
+                    if(err){
+                        console.log(err);
+                        res.status(500);
+                        res.json(dbError);
+                    }
+                    else{
+                        notification.setInactive(notifId, () => {
+                            notification.create({
+                                createdBy: decodedToken.userID,
+                                createdFor: createdFor,
+                                type: 'status',
+                                body: status
+                            }, () => {
+                                res.status(200);
+                                res.json({'success' : 'Request has been '+status});
+                            }, () => {
+                                res.status(400);
+                                res.json(dbError);
+                            });
+                        }, () => {
+                            res.status(400);
+                            res.json(dbError);
+                        });                        
+                    }
                 });
             }
         });
