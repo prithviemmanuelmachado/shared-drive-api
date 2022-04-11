@@ -95,105 +95,103 @@ router.get('/getRoutesByProximity', (req, res) => {
         if(err){
             res.status(500);
             res.json(dbError);
-            console.log(err);
         }
         else{
-            if(doc.length === 0){
-                res.status(400);
-                res.json(routeError);
-            }
-            else{
-                routes = doc;
-                //from location
-                Route.aggregate([
-                    {
-                        "$geoNear": {
-                            "near":{
-                                "type": "Point",
-                                "coordinates": coords
-                            },
-                            "distanceField": "distance",
-                            "spherical": true,
-                            "distanceMultiplier": 0.001,
-                            "maxDistance": 10000,
-                            "key": "fromLocation" 
+            routes = doc;
+            //from location
+            Route.aggregate([
+                {
+                    "$geoNear": {
+                        "near":{
+                            "type": "Point",
+                            "coordinates": coords
+                        },
+                        "distanceField": "distance",
+                        "spherical": true,
+                        "distanceMultiplier": 0.001,
+                        "maxDistance": 10000,
+                        "key": "fromLocation" 
+                    }
+                }
+            ], (err, doc) => {
+                if(err){
+                    res.status(500);
+                    res.json(dbError);
+                }
+                else{
+                    let isInArray = false;
+                    for(let i = 0; i < doc.length; i ++){
+                        isInArray = false;
+                        for(let j = 0 ;j < routes.length; j++){
+                            if(doc[i]._id.equals(routes[j]._id)){
+                                isInArray = true;
+                                break;
+                            }
+                        }
+                        if(!isInArray){
+                            routes.push(doc[i]);
                         }
                     }
-                ], (err, doc) => {
-                    if(err){
-                        res.status(500);
-                        res.json(dbError);
-                        console.log(err);
+
+                    //remove the routes that do not have any available seating
+                    for(let i = 0; i < routes.length; i++){
+                        if(routes[i].noOfAvailableSeats <= 0){
+                            routes.splice(i, 1);
+                        }
+                    }
+                    
+                    //sort by distance
+                    routes.sort((a, b) => {
+                        return a.distance - b.distance;
+                    });
+
+                    //return bad request if no routes
+                    if(routes.length === 0){
+                        res.status(400);
+                        res.json(routeError);
                     }
                     else{
-                        if(doc.length === 0){
-                            res.status(400);
-                            res.json(routeError);
+                        //if not logged in jst send the rouets
+                        //if logged in remove the users routes and then send it
+                        if(token == 'undefined'){
+                            res.status(200);
+                            res.json(routes);
                         }
                         else{
-                            let isInArray = false;
-                            for(let i = 0; i < doc.length; i ++){
-                                isInArray = false;
-                                for(let j = 0 ;j < routes.length; j++){
-                                    if(doc[i]._id.equals(routes[j]._id)){
-                                        isInArray = true;
-                                        break;
-                                    }
+                            jwt.verify(token, jwt_secret, (err, decodedToken)=>{
+                                if(err){
+                                    res.status(200);
+                                    res.json(routes);
                                 }
-                                if(!isInArray){
-                                    routes.push(doc[i]);
-                                }
-                            }
-
-                            //sort by distance
-                            routes.sort((a, b) => {
-                                return a.distance - b.distance;
-                            });
-
-                            //if not logged in jst send the rouets
-                            //if logged in remove the users routes and then send it
-                            if(token == 'undefined'){
-                                res.status(200);
-                                res.json(routes);
-                            }
-                            else{
-                                jwt.verify(token, jwt_secret, (err, decodedToken)=>{
-                                    if(err){
-                                        res.status(200);
-                                        res.json(routes);
-                                    }
-                                    else{
-                                        User.findOne({_id: decodedToken.userID}, (err, doc) => {
-                                            if(err){
-                                                res.status(500);
-                                                res.json(dbError);
+                                else{
+                                    User.findOne({_id: decodedToken.userID}, (err, doc) => {
+                                        if(err){
+                                            res.status(500);
+                                            res.json(dbError);
+                                        }
+                                        else{
+                                            if(!doc){
+                                                res.status(400);
+                                                res.json(authError);
                                             }
                                             else{
-                                                if(!doc){
-                                                    res.status(400);
-                                                    res.json(authError);
-                                                }
-                                                else{
-                                                    const username = doc.username;    
-                                                    routes.forEach((element, index) => {
-                                                        if(element.createdBy === username){
-                                                            routes.splice(index, 1);
-                                                        }
-                                                    });
-                                                }
+                                                const username = doc.username;    
+                                                routes.forEach((element, index) => {
+                                                    if(element.createdBy === username){
+                                                        routes.splice(index, 1);
+                                                    }
+                                                });
                                                 res.status(200);
                                                 res.json(routes);
                                             }
-                                        });                         
-                                    }
-                                });
-                            } 
-                        }
-                    }
-                });
-
-                
-            }
+                                        }
+                                    });                         
+                                }
+                            });
+                        } 
+                    }   
+                }
+            });               
         }
     });
 

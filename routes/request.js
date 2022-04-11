@@ -8,6 +8,7 @@ const secrets = require('../secrets.json');
 const settings = require('../settings.json');
 const Request = require('../models/request');
 const User = require('../models/user');
+const Route = require('../models/route');
 const notification = require('../models/notificationService');
 
 const router = express.Router();
@@ -137,30 +138,37 @@ router.put('/setRequestStatus', (req, res) => {
                     status: status
                 }}, (err, doc, re) => {
                     if(err){
-                        console.log(err);
                         res.status(500);
                         res.json(dbError);
                     }
-                    else{
-                        notification.setInactive(notifId, () => {
-                            notification.create({
-                                createdBy: decodedToken.userID,
-                                createdFor: createdFor,
-                                type: 'status',
-                                body: status
-                            }, () => {
-                                res.status(200);
-                                res.json({'success' : 'Request has been '+status});
-                            }, () => {
-                                res.status(400);
-                                res.json(dbError);
-                            });
-                        }, () => {
-                            res.status(400);
-                            res.json(dbError);
-                        });                        
-                    }
                 });
+                if(status === 'accepted'){
+                    Route.findByIdAndUpdate(doc.routeId, 
+                        {$inc: { noOfAvailableSeats: -1 }}, 
+                        (err, doc) => {
+                            if(err){
+                                res.status(500);
+                                res.json(dbError);
+                            }
+                    });
+                }
+                notification.setInactive(notifId, () => {
+                    notification.create({
+                        createdBy: decodedToken.userID,
+                        createdFor: createdFor,
+                        type: 'status',
+                        body: status
+                    }, () => {
+                        res.status(200);
+                        res.json({'success' : 'Request has been '+status});
+                    }, () => {
+                        res.status(400);
+                        res.json(dbError);
+                    });
+                }, () => {
+                    res.status(400);
+                    res.json(dbError);
+                });             
             }
         });
     }
