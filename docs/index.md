@@ -325,7 +325,7 @@ title: Documentation for Shared Drive API
             Path 
         </td>
         <td>
-            /user/createRoute
+            /route/createRoute
         </td>
     </tr>
     <tr>
@@ -400,7 +400,7 @@ title: Documentation for Shared Drive API
             Path 
         </td>
         <td>
-            /user/getRoutesByProximity
+            /route/getRoutesByProximity
         </td>
     </tr>
     <tr>
@@ -474,6 +474,188 @@ title: Documentation for Shared Drive API
     </tr>
 </table>
 
+<h4>Request to join a route</h4>
+<table>
+    <tr>
+        <td>
+            Path 
+        </td>
+        <td>
+            /request/createRequest
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Request Type 
+        </td>
+        <td>
+            POST
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Expected body 
+        </td>
+        <td>
+            {
+                "routeId": "",
+                "lng": 0,
+                "lat": 0,
+                "author": ""
+            }
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Token 
+        </td>
+        <td>
+            Pass in header
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Success Status
+        </td>
+        <td>
+            200, OK
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Success message 
+        </td>
+        <td>
+            Request has been sent. Please wait for response
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Possible failure codes
+        </td>
+        <td>
+            400(Bad Request), 500(Internal Server Error)
+        </td>
+    </tr>
+</table>
 
+<h4>Get the pickup location</h4>
+<table>
+    <tr>
+        <td>
+            Path 
+        </td>
+        <td>
+            /request/getPickupLocation
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Request Type 
+        </td>
+        <td>
+            POST
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Expected query parameters 
+        </td>
+        <td>
+            id (route id)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Token 
+        </td>
+        <td>
+            Pass in header
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Success Status
+        </td>
+        <td>
+            200, OK
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Success body 
+        </td>
+        <td>
+            [0, 0] (lng, lat)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Possible failure codes
+        </td>
+        <td>
+            400(Bad Request), 500(Internal Server Error)
+        </td>
+    </tr>
+</table>
 
+<h4>Accept or reject request</h4>
+<table>
+    <tr>
+        <td>
+            Path 
+        </td>
+        <td>
+            /request/setRequestStatus
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Request Type 
+        </td>
+        <td>
+            PUT
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Expected query parameters 
+        </td>
+        <td>
+            status (accepted, rejected), id (route id), notifId (id of the notification), createdFor (the user id of the user who created the request)
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Token 
+        </td>
+        <td>
+            Pass in header
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Success Status
+        </td>
+        <td>
+            200, OK
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Success message 
+        </td>
+        <td>
+            Request has been accepted/rejected
+        </td>
+    </tr>
+    <tr>
+        <td>
+            Possible failure codes
+        </td>
+        <td>
+            400(Bad Request), 500(Internal Server Error)
+        </td>
+    </tr>
+</table>
 
