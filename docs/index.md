@@ -3,7 +3,7 @@ layout: default
 title: Documentation for Shared Drive API
 ---
 
-<h5>Register a user</h5>
+<h3>Register a user</h3>
 <table>
     <tr>
         <td>
@@ -70,7 +70,7 @@ title: Documentation for Shared Drive API
     </tr>
 </table>
 
-<h5>User login</h5>
+<h3>User login</h3>
 <table>
     <tr>
         <td>
@@ -133,7 +133,7 @@ title: Documentation for Shared Drive API
     </tr>
 </table>
 
-<h5>Admin login</h5>
+<h3>Admin login</h3>
 <table>
     <tr>
         <td>
