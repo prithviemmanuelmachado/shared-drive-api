@@ -2,8 +2,8 @@ const jwt = require('jsonwebtoken');
 const secrets = require('../secrets.json');
 const settings = require('../settings.json');
 
-const key = secrets[0].jwtKey;
-const jwtExpiresIn = settings[0].jwtExpiresIn;
+const key = secrets.jwtKey;
+const jwtExpiresIn = settings.jwtExpiresIn;
 
 module.exports = function(userID, isAdmin){
     return jwt.sign({

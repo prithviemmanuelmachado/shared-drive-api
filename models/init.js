@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const secrets = require('../secrets.json');
 
-const password = secrets[0].dbPassword;
-const uri = secrets[0].dbURI.replace('<password>', password);
+const password = secrets.dbPassword;
+const uri = secrets.dbURI.replace('<password>', password);
 
 function init(callback)
 {

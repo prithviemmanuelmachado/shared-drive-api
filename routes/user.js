@@ -14,9 +14,9 @@ const jwt = require('jsonwebtoken');
 const secrets = require('../secrets.json');
 
 const router = express.Router();
-const saltRounds = parseInt(settings[0].saltRounds);
+const saltRounds = parseInt(settings.saltRounds);
 const dbError = {'error': 'Error connecting to database. Please contact admin.'};
-const jwt_secret = secrets[0].jwtKey;
+const jwt_secret = secrets.jwtKey;
 
 router.use(cookie_parser());
 

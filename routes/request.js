@@ -14,7 +14,7 @@ const notification = require('../models/notificationService');
 const router = express.Router();
 const dbError = {'error': 'Error connecting to database. Please contact admin.'};
 const authError = {'error' : 'Please login to perform action'};
-const jwt_secret = secrets[0].jwtKey;
+const jwt_secret = secrets.jwtKey;
 
 router.use(cookie_parser());
 
